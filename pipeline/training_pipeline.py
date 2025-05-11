@@ -15,9 +15,11 @@ if __name__ == "__main__":
     data_ingestion = Data_ingestion(config)
     data_ingestion.run()
     
+    
     ## 2. Data Preprocessing
     data_preprocessor = DataPreprocessing(TRAIN_FILE_PATH, TEST_FILE_PATH, PROCESSED_DIR, CONFIG_FILE_PATH)
     data_preprocessor.process()
+    
     
     ## 3. Model Training
     model_trainer = ModelTraining(PROCESSED_TRAIN_FILE_PATH, PROCESSED_TEST_FILE_PATH, MODEL_DIR)
