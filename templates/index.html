@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Booking Prediction</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 40px 0;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-align: center;
+            padding: 25px 15px;
+            border-bottom: none;
+        }
+        
+        .card-header h1 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 2.2rem;
+        }
+        
+        .card-header p {
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+        
+        .card-body {
+            padding: 30px;
+            background-color: white;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), #2980b9);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .result-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 5px solid #28a745;
+        }
+        
+        .result-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 5px solid #dc3545;
+        }
+        
+        .form-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+        }
+        
+        .form-floating {
+            position: relative;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+        
+        .form-row {
+            margin-bottom: 20px;
+        }
+        
+        /* Tooltip styling */
+        .tooltip-icon {
+            color: var(--secondary-color);
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        /* Progress indicator */
+        .progress-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .progress-step::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+        
+        .progress-step.active::after {
+            background-color: var(--secondary-color);
+        }
+        
+        .progress-step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            color: #6c757d;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .progress-step.active .progress-step-icon {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .progress-step-text {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        .progress-step.active .progress-step-text {
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container animate-in">
+        <div class="card">
+            <div class="card-header">
+                <h1><i class="fas fa-hotel me-2"></i> Hotel Booking Prediction</h1>
+                <p>Find out if your booking is likely to be canceled</p>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/" id="booking-form">
+                    <div class="progress-indicator mb-4">
+                        <div class="progress-step active">
+                            <div class="progress-step-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="progress-step-text">Booking Details</div>
+                        </div>
+                        <div class="progress-step">
+                            <div class="progress-step-icon">
+                                <i class="fas fa-bed"></i>
+                            </div>
+                            <div class="progress-step-text">Room Selection</div>
+                        </div>
+                        <div class="progress-step">
+                            <div class="progress-step-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="progress-step-text">Prediction</div>
+                        </div>
+                    </div>
+
+                    <h4 class="section-title">Booking Information</h4>
+                    <div class="row form-row">
+                        <div class="col-md-6 mb-3">
+                            <label for="lead_time" class="form-label">
+                                Lead Time 
+                                <i class="fas fa-info-circle tooltip-icon" data-bs-toggle="tooltip" title="Number of days between booking and arrival"></i>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                                <input type="number" class="form-control" name="lead_time" id="lead_time" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="no_of_special_requests" class="form-label">
+                                Special Requests
+                                <i class="fas fa-info-circle tooltip-icon" data-bs-toggle="tooltip" title="Number of special requests made by the guest"></i>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-concierge-bell"></i></span>
+                                <input type="number" class="form-control" name="no_of_special_requests" id="no_of_special_requests" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row form-row">
+                        <div class="col-md-6 mb-3">
+                            <label for="avg_price_per_room" class="form-label">
+                                Average Price Per Room
+                                <i class="fas fa-info-circle tooltip-icon" data-bs-toggle="tooltip" title="Average price per night for the room"></i>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <input type="number" class="form-control" name="avg_price_per_room" id="avg_price_per_room" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="market_segment_type" class="form-label">
+                                Market Segment
+                                <i class="fas fa-info-circle tooltip-icon" data-bs-toggle="tooltip" title="Type of booking channel"></i>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-chart-pie"></i></span>
+                                <select class="form-select" id="market_segment_type" name="market_segment_type" required>
+                                    <option value="" disabled selected>Select market segment</option>
+                                    <option value="0">Aviation</option>
+                                    <option value="1">Complementary</option>
+                                    <option value="2">Corporate</option>
+                                    <option value="3">Offline</option>
+                                    <option value="4">Online</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="section-title">Stay Details</h4>
+                    <div class="row form-row">
+                        <div class="col-md-6 mb-3">
+                            <label for="arrival_date" class="form-label">Arrival Date</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
+                                <input type="number" class="form-control" id="arrival_date" name="arrival_date" min="1" max="31" placeholder="Day of month (1-31)" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="arrival_month" class="form-label">Arrival Month</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                <select class="form-select" id="arrival_month" name="arrival_month" required>
+                                    <option value="" disabled selected>Select month</option>
+                                    <option value="1">January</option>
+                                    <option value="2">February</option>
+                                    <option value="3">March</option>
+                                    <option value="4">April</option>
+                                    <option value="5">May</option>
+                                    <option value="6">June</option>
+                                    <option value="7">July</option>
+                                    <option value="8">August</option>
+                                    <option value="9">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row form-row">
+                        <div class="col-md-4 mb-3">
+                            <label for="no_of_week_nights" class="form-label">
+                                Weekday Nights
+                                <i class="fas fa-info-circle tooltip-icon" data-bs-toggle="tooltip" title="Number of weekday nights (Monday-Friday) of the stay"></i>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-moon"></i></span>
+                                <input type="number" class="form-control" name="no_of_week_nights" id="no_of_week_nights" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="no_of_weekend_nights" class="form-label">
+                                Weekend Nights
+                                <i class="fas fa-info-circle tooltip-icon" data-bs-toggle="tooltip" title="Number of weekend nights (Saturday-Sunday) of the stay"></i>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-glass-cheers"></i></span>
+                                <input type="number" class="form-control" name="no_of_weekend_nights" id="no_of_weekend_nights" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="no_of_adults" class="form-label">
+                                Number of Adults
+                                <i class="fas fa-info-circle tooltip-icon" data-bs-toggle="tooltip" title="Number of adults in the booking"></i>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="number" class="form-control" name="no_of_adults" id="no_of_adults" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="section-title">Room Selection</h4>
+                    <div class="row form-row">
+                        <div class="col-md-12 mb-3">
+                            <label for="room_type_reserved" class="form-label">Room Type</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-door-open"></i></span>
+                                <select class="form-select" id="room_type_reserved" name="room_type_reserved" required>
+                                    <option value="" disabled selected>Select room type</option>
+                                    <option value="0">Room Type 1 - Standard</option>
+                                    <option value="1">Room Type 2 - Deluxe</option>
+                                    <option value="2">Room Type 3 - Executive</option>
+                                    <option value="3">Room Type 4 - Suite</option>
+                                    <option value="4">Room Type 5 - Premium Suite</option>
+                                    <option value="5">Room Type 6 - Presidential</option>
+                                    <option value="6">Room Type 7 - Royal Suite</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-magic me-2"></i> Predict Booking Status
+                        </button>
+                    </div>
+                </form>
+
+                {% if prediction is not none %}
+                <div class="result mt-4 animate-in {% if prediction == 0 %}result-danger{% else %}result-success{% endif %}">
+                    <div class="row">
+                        <div class="col-md-2 text-center">
+                            {% if prediction == 0 %}
+                            <i class="fas fa-times-circle fa-4x text-danger"></i>
+                            {% else %}
+                            <i class="fas fa-check-circle fa-4x text-success"></i>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-10 d-flex align-items-center">
+                            {% if prediction == 0 %}
+                            <div>
+                                <h3 class="mb-2">Prediction: Booking Likely to be Canceled</h3>
+                                <p class="mb-0">Our model predicts that this booking has a high probability of cancellation.</p>
+                            </div>
+                            {% elif prediction == 1 %}
+                            <div>
+                                <h3 class="mb-2">Prediction: Booking Likely to be Confirmed</h3>
+                                <p class="mb-0">Our model predicts that this booking has a high probability of being confirmed.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="text-center mt-4 text-muted">
+            <small>© 2023 Hotel Booking Prediction System | Powered by Machine Learning</small>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+            
+            // Form validation and visual feedback
+            const form = document.getElementById('booking-form');
+            const inputs = form.querySelectorAll('input, select');
+            
+            inputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    if (this.value) {
+                        this.classList.add('is-valid');
+                        this.classList.remove('is-invalid');
+                    } else {
+                        this.classList.remove('is-valid');
+                        this.classList.add('is-invalid');
+                    }
+                });
+            });
+            
+            // Progress indicator functionality
+            const progressSteps = document.querySelectorAll('.progress-step');
+            let currentStep = 0;
+            
+            // For demonstration purposes - in a real app, you'd have multi-step form functionality
+            // This is just to show the visual effect
+            form.addEventListener('click', function(e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+                    const inputType = e.target.id;
+                    
+                    if (inputType.includes('lead_time') || inputType.includes('special_requests') || 
+                        inputType.includes('price') || inputType.includes('market_segment')) {
+                        setActiveStep(0);
+                    } else if (inputType.includes('room_type')) {
+                        setActiveStep(1);
+                    }
+                }
+            });
+            
+            function setActiveStep(step) {
+                progressSteps.forEach((stepEl, index) => {
+                    if (index <= step) {
+                        stepEl.classList.add('active');
+                    } else {
+                        stepEl.classList.remove('active');
+                    }
+                });
+                currentStep = step;
+            }
+            
+            // Form submission animation
+            form.addEventListener('submit', function(e) {
+                setActiveStep(2);
+                
+                // Add loading state to button
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processing...';
+                submitBtn.disabled = true;
+                
+                // In a real application, you would handle the form submission here
+                // This is just for visual effect and would be removed in production
+                // setTimeout(() => {
+                //     submitBtn.innerHTML = originalText;
+                //     submitBtn.disabled = false;
+                // }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

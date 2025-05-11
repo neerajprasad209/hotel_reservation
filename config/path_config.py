@@ -19,9 +19,9 @@ CONFIG_FILE_PATH = "./config/config.yaml"
 
 ## Data Processing
 
-PROCESSED_DIR = "artifacts\processed"
+PROCESSED_DIR = "./artifacts/processed"
 PROCESSED_TRAIN_FILE_PATH = os.path.join(PROCESSED_DIR, "train.csv")
 PROCESSED_TEST_FILE_PATH = os.path.join(PROCESSED_DIR, "test.csv")
 
 # Model Training
-MODEL_DIR = "artifacts/model/lgbm.pkl"
+MODEL_DIR = "./artifacts/model/lgbm.pkl"
